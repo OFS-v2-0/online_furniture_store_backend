@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
 
 from apps.product.models import (
@@ -12,6 +12,7 @@ from apps.product.models import (
     Discount,
     Favorite,
     FurnitureDetails,
+    FurniturePicture,
     Material,
     Product,
 )
@@ -96,8 +97,12 @@ class ProductAdmin(ImportExportModelAdmin):
     ordering = ('pk',)
     empty_value_display = ADMIN_EMPTY_VALUE_DISPLAY
 
+    @admin.display(description='Изображения')
     def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 150px;">')
+        images_html = ''
+        for image in obj.image.all():
+            images_html += f'<img src="{image.image.url}" style="max-height: 150px; margin-right: 5px;">'
+        return format_html(images_html)
 
 
 @admin.register(CartModel)
@@ -151,3 +156,10 @@ class CollectionAdmin(ImportExportModelAdmin):
     search_fields = list_display
     list_filter = list_display
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(FurniturePicture)
+class FurniturePictureAdmin(ImportExportModelAdmin):
+    list_display = ('image',)
+    search_fields = list_display
+    list_filter = list_display

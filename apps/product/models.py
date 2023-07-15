@@ -41,6 +41,15 @@ class Material(models.Model):
         return self.name
 
 
+class FurniturePicture(models.Model):
+    image = models.ImageField(verbose_name='Фотография продукта', default='products/noimage_detail.png')
+
+    class Meta:
+        verbose_name = 'Изображение мебели'
+        verbose_name_plural = 'Изображения мебели'
+        ordering = ('pk',)
+
+
 class Color(models.Model):
     """Модель цветов товаров в магазине."""
 
@@ -80,7 +89,7 @@ class FurnitureDetails(models.Model):
     """Особенности конструкции"""
 
     purpose = models.CharField(verbose_name='Назначение', max_length=50, blank=True, null=True)
-    furniture_type = models.CharField(verbose_name='Тип', max_length=50, blank=True, null=True)
+    furniture_type = models.CharField(verbose_name='Тип конструкции', max_length=50, blank=True, null=True)
     construction = models.CharField(verbose_name='Конструкция', max_length=50, blank=True, null=True)
     swing_mechanism = models.CharField(verbose_name='Механизм качания', max_length=50, blank=True, null=True)
     armrest_adjustment = models.CharField(
@@ -119,6 +128,7 @@ class Product(models.Model):
 
     article = models.PositiveIntegerField(verbose_name='Артикул', unique=True)
     name = models.CharField(verbose_name='Название', max_length=20)
+    type = models.CharField(verbose_name='Тип мебели', max_length=20, default='Не установлен')
     width = models.PositiveSmallIntegerField(verbose_name='Ширина, см', validators=[MaxValueValidator(15000)])
     height = models.PositiveSmallIntegerField(verbose_name='Высота, см', validators=[MaxValueValidator(15000)])
     length = models.PositiveSmallIntegerField(verbose_name='Длина, см', validators=[MaxValueValidator(15000)])
@@ -126,7 +136,7 @@ class Product(models.Model):
         verbose_name='Вес, кг', validators=[MaxValueValidator(500)], decimal_places=2, max_digits=5
     )
     color = models.ForeignKey(Color, verbose_name='Цвет', on_delete=models.CASCADE, related_name='products')
-    image = models.ImageField(verbose_name='Фотография продукта', default='products/noimage_detail.png')
+    image = models.ManyToManyField(FurniturePicture, verbose_name='изображения', related_name='products')
     material = models.ManyToManyField(Material, verbose_name='материалы', related_name='products')
     furniture_details = models.ForeignKey(
         FurnitureDetails,
