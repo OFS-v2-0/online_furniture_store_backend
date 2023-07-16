@@ -94,7 +94,7 @@ class OrderProduct(models.Model):
         return f'{self.order}, товар: {self.product}'
 
     def save(self, *args, **kwargs):
-        self.price = self.product.price
+        self.price = self.product.calculate_total_price()
         self.cost = self.price * self.quantity
         super().save(*args, **kwargs)
 
