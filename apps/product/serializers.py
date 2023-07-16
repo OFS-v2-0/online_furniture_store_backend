@@ -1,7 +1,16 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from apps.product.models import Category, Collection, Color, Discount, FurnitureDetails, Material, Product
+from apps.product.models import (
+    Category,
+    Collection,
+    Color,
+    Discount,
+    FurnitureDetails,
+    FurniturePicture,
+    Material,
+    Product,
+)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -44,13 +53,21 @@ class DiscountSerializer(serializers.ModelSerializer):
         fields = ('discount',)
 
 
+class FurniturePictureSerializer(serializers.ModelSerializer):
+    """Сериалайзер для модели Discount."""
+
+    class Meta:
+        model = FurniturePicture
+        fields = ('main_image', 'first_image', 'second_image', 'third_image')
+
+
 class ShortProductSerializer(serializers.ModelSerializer):
     """Сериалайзер для отображения товаров."""
 
     is_favorited = serializers.SerializerMethodField(method_name='analyze_is_favorited')
     discount = serializers.SerializerMethodField(method_name='extract_discount')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
-    image = Base64ImageField(required=True)
+    images = Base64ImageField(source='images.main_image', required=True)
     available_quantity = serializers.SerializerMethodField(method_name='fetch_available_quantity')
 
     class Meta:
@@ -64,7 +81,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
             'discount',
             'total_price',
             'available_quantity',
-            'image',
+            'images',
         )
 
     def analyze_is_favorited(self, obj):
@@ -90,17 +107,32 @@ class ShortProductSerializer(serializers.ModelSerializer):
         return 5
 
 
+class CollectionSerializer(serializers.ModelSerializer):
+    """Сериалайзер для модели Collection."""
+
+    image = Base64ImageField()
+
+    class Meta:
+        model = Collection
+        fields = ('id', 'name', 'slug', 'image')
+        read_only_fields = fields
+
+
 class ProductSerializer(ShortProductSerializer):
     """Сериалайзер для модели Product."""
 
     category = CategorySerializer()
     color = ColorSerializer()
+    collection = CollectionSerializer()
+    images = FurniturePictureSerializer()
     material = MaterialSerializer(many=True)
 
     class Meta(ShortProductSerializer.Meta):
         fields = ShortProductSerializer.Meta.fields + (
             'category',
             'material',
+            'collection',
+            'images',
             'width',
             'height',
             'length',
@@ -113,14 +145,3 @@ class ProductSerializer(ShortProductSerializer):
             'color',
         )
         read_only_fields = ('category', 'material', 'purpose', 'is_favorited')
-
-
-class CollectionSerializer(serializers.ModelSerializer):
-    """Сериалайзер для модели Collection."""
-
-    image = Base64ImageField()
-
-    class Meta:
-        model = Collection
-        fields = ('id', 'name', 'slug', 'image')
-        read_only_fields = fields

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from import_export.admin import ImportExportModelAdmin
 
 from apps.product.models import (
@@ -100,9 +100,11 @@ class ProductAdmin(ImportExportModelAdmin):
     @admin.display(description='Изображения')
     def preview(self, obj):
         images_html = ''
-        for image in obj.image.all():
-            images_html += f'<img src="{image.image.url}" style="max-height: 150px; margin-right: 5px;">'
-        return format_html(images_html)
+        all_images = [obj.images.main_image, obj.images.first_image, obj.images.second_image, obj.images.third_image]
+        for image in all_images:
+            if image:
+                images_html += f'<img src="{image.url}" style="max-height: 150px;">'
+        return mark_safe(images_html)
 
 
 @admin.register(CartModel)
@@ -160,6 +162,6 @@ class CollectionAdmin(ImportExportModelAdmin):
 
 @admin.register(FurniturePicture)
 class FurniturePictureAdmin(ImportExportModelAdmin):
-    list_display = ('image',)
+    list_display = ('main_image', 'first_image', 'second_image', 'third_image')
     search_fields = list_display
     list_filter = list_display

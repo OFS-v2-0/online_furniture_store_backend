@@ -70,8 +70,7 @@ class ProductViewSet(ModelViewSet):
     def favorite(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if request.method == 'POST':
-            serializer = ShortProductSerializer(product, data=request.data, context={'request': request})
-            serializer.is_valid(raise_exception=True)
+            serializer = ShortProductSerializer(product, context={'request': request})
             Favorite.objects.get_or_create(user=request.user, product=product)
             return Response(serializer.data, status=HTTP_201_CREATED)
         get_object_or_404(Favorite, user=request.user, product=product).delete()

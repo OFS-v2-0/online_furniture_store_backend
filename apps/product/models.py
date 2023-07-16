@@ -42,7 +42,16 @@ class Material(models.Model):
 
 
 class FurniturePicture(models.Model):
-    image = models.ImageField(verbose_name='Фотография продукта', default='products/noimage_detail.png')
+    main_image = models.ImageField(verbose_name='Фотография продукта', default='products/noimage_detail.png')
+    first_image = models.ImageField(
+        verbose_name='Фотография продукта', default='products/noimage_detail.png', blank=True
+    )
+    second_image = models.ImageField(
+        verbose_name='Фотография продукта', default='products/noimage_detail.png', blank=True
+    )
+    third_image = models.ImageField(
+        verbose_name='Фотография продукта', default='products/noimage_detail.png', blank=True
+    )
 
     class Meta:
         verbose_name = 'Изображение мебели'
@@ -128,7 +137,7 @@ class Product(models.Model):
 
     article = models.PositiveIntegerField(verbose_name='Артикул', unique=True)
     name = models.CharField(verbose_name='Название', max_length=20)
-    type = models.CharField(verbose_name='Тип мебели', max_length=20, default='Не установлен')
+    product_type = models.CharField(verbose_name='Тип мебели', max_length=20)
     width = models.PositiveSmallIntegerField(verbose_name='Ширина, см', validators=[MaxValueValidator(15000)])
     height = models.PositiveSmallIntegerField(verbose_name='Высота, см', validators=[MaxValueValidator(15000)])
     length = models.PositiveSmallIntegerField(verbose_name='Длина, см', validators=[MaxValueValidator(15000)])
@@ -136,7 +145,9 @@ class Product(models.Model):
         verbose_name='Вес, кг', validators=[MaxValueValidator(500)], decimal_places=2, max_digits=5
     )
     color = models.ForeignKey(Color, verbose_name='Цвет', on_delete=models.CASCADE, related_name='products')
-    image = models.ManyToManyField(FurniturePicture, verbose_name='изображения', related_name='products')
+    images = models.ForeignKey(
+        FurniturePicture, verbose_name='изображения', on_delete=models.CASCADE, related_name='products'
+    )
     material = models.ManyToManyField(Material, verbose_name='материалы', related_name='products')
     furniture_details = models.ForeignKey(
         FurnitureDetails,
