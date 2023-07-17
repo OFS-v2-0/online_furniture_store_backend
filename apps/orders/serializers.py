@@ -118,9 +118,9 @@ class OrderWriteSerializer(serializers.ModelSerializer):
                 OrderProduct(
                     order=order,
                     product=product.get('product'),
-                    price=product.get('product').price,
+                    price=product.get('product').calculate_total_price(),
                     quantity=product['quantity'],
-                    cost=product.get('product').price * product['quantity'],
+                    cost=product.get('product').calculate_total_price() * product['quantity'],
                 )
                 for product in products
             ]
