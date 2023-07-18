@@ -70,13 +70,16 @@ class ProductViewSet(ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         """Выводит информацию о товаре и таких же товарах в другом цвете."""
         product = self.get_object()
-        other_color_same_products = (
-            self.get_queryset()
-            .filter(product_type=product.product_type, name=product.name)
-            .exclude(color=product.color)
-        )
+        similar_products = self.get_queryset().filter(category=product.category)
+        other_color_same_products = similar_products.filter(
+            product_type=product.product_type, name=product.name
+        ).exclude(color=product.color)
         serializer = ProductAllColors(
-            instance={'product': product, 'other_color_same_products': other_color_same_products}
+            instance={
+                'product': product,
+                'other_color_same_products': other_color_same_products,
+                'similar_products': similar_products,
+            }
         )
         return Response(serializer.data)
 

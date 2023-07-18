@@ -78,7 +78,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(method_name='analyze_is_favorited')
     discount = serializers.SerializerMethodField(method_name='extract_discount')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
-    image = Base64ImageField(required=True)
+    images = Base64ImageField(required=True)
     available_quantity = serializers.SerializerMethodField(method_name='fetch_available_quantity')
     product_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
 
@@ -94,7 +94,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
             'discount',
             'total_price',
             'available_quantity',
-            'image',
+            'images',
         )
 
     def analyze_is_favorited(self, obj):
@@ -156,3 +156,4 @@ class ProductAllColors(serializers.Serializer):
 
     product = ProductSerializer()
     other_color_same_products = ProductSerializer(many=True)
+    similar_products = ProductSerializer(many=True)
