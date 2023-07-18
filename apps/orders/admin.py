@@ -16,9 +16,9 @@ class DeliveryTypeAdmin(ImportExportModelAdmin):
 
 @admin.register(Delivery)
 class DeliveryAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'address', 'phone', 'type_delivery', 'created', 'updated')
-    search_fields = ('phone',)
-    list_filter = ('phone', 'type_delivery')
+    list_display = ('id', 'address', 'type_delivery', 'datetime_from', 'datetime_to', 'elevator')
+    search_fields = ('address',)
+    list_filter = ('address', 'type_delivery')
 
 
 @admin.register(OrderProduct)
