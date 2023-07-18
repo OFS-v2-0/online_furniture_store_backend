@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.product.filters import ProductsFilter
 from apps.product.models import Category, Collection, Color, Discount, Favorite, FurnitureDetails, Material, Product
@@ -16,6 +16,7 @@ from apps.product.serializers import (
     DiscountSerializer,
     FurnitureDetailsSerializer,
     MaterialSerializer,
+    ProductAllColors,
     ProductSerializer,
     ShortProductSerializer,
 )
@@ -57,7 +58,7 @@ class FurnitureDetailsViewSet(ReadOnlyModelViewSet):
     serializer_class = FurnitureDetailsSerializer
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(ReadOnlyModelViewSet):
     """Вьюсет для товаров."""
 
     queryset = Product.objects.all()
@@ -65,6 +66,19 @@ class ProductViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = ProductsFilter
     search_fields = ('name',)
+
+    def retrieve(self, request, *args, **kwargs):
+        """Выводит информацию о товаре и таких же товарах в другом цвете."""
+        product = self.get_object()
+        other_color_same_products = (
+            self.get_queryset()
+            .filter(product_type=product.product_type, name=product.name)
+            .exclude(color=product.color)
+        )
+        serializer = ProductAllColors(
+            instance={'product': product, 'other_color_same_products': other_color_same_products}
+        )
+        return Response(serializer.data)
 
     @action(detail=True, methods=['post', 'delete'], url_path='favorite')
     def favorite(self, request, pk):
