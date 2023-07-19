@@ -41,23 +41,11 @@ STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
-# MEDIA
-# ------------------------------------------------------------------------------
 
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
 ADMIN_URL = env('DJANGO_ADMIN_URL', default='admin/')
-
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ['anymail']  # noqa: F405
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-# https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
-# https://anymail.readthedocs.io/en/stable/esps
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-ANYMAIL = {}
 
 
 # LOGGING
@@ -97,6 +85,6 @@ LOGGING = {
 # django-rest-framework
 # -------------------------------------------------------------------------------
 # Tools that generate code samples can use SERVERS to point to the correct domain
-SPECTACULAR_SETTINGS['SERVERS'] = [{'url': 'https://example.com', 'description': 'Production server'}]  # noqa: F405
-# Your stuff...
-# ------------------------------------------------------------------------------
+SPECTACULAR_SETTINGS['SERVERS'] = [  # noqa: F405
+    {'url': 'https://ofs.proninteam.ru', 'description': 'Production server'}
+]
