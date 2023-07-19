@@ -117,7 +117,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
 
     def fetch_available_quantity(self, obj):
         """Возвращает доступное для заказ количество товара на складе."""
-        return 5
+        return obj.storehouse.quantity
 
 
 class ProductSerializer(ShortProductSerializer):
