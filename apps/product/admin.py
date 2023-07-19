@@ -12,8 +12,10 @@ from apps.product.models import (
     Discount,
     Favorite,
     FurnitureDetails,
+    FurniturePicture,
     Material,
     Product,
+    ProductType,
 )
 from config.settings.base import ADMIN_EMPTY_VALUE_DISPLAY
 
@@ -38,13 +40,6 @@ class FavoriteInLine(admin.TabularInline):
     verbose_name_plural = 'В избранном'
 
 
-class ProductMaterialInLine(admin.TabularInline):
-    model = Product.material.through
-    extra = 1
-    verbose_name = 'Материал'
-    verbose_name_plural = 'Материалы'
-
-
 @admin.register(Category)
 class CategoriesAdmin(ImportExportModelAdmin):
     list_display = ('pk', 'name', 'slug')
@@ -55,7 +50,7 @@ class CategoriesAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Material)
-class MaterialsAdmin(ImportExportModelAdmin):
+class MaterialAdmin(ImportExportModelAdmin):
     list_display = ('pk', 'name')
     search_fields = ('name',)
     ordering = ('pk',)
@@ -82,14 +77,15 @@ class ProductAdmin(ImportExportModelAdmin):
         'brand',
         'country',
         'color',
+        'material',
+        'legs_material',
         'furniture_details',
         'price',
         'fast_delivery',
         'preview',
     )
-    exclude = ('material',)
     list_editable = ('price', 'fast_delivery')
-    inlines = (ProductMaterialInLine, DiscountInLine, FavoriteInLine, CartItemInLine)
+    inlines = (DiscountInLine, FavoriteInLine, CartItemInLine)
     search_fields = ('article', 'name', 'brand')
     list_filter = ('article', 'name', 'category')
     readonly_fields = ('preview',)
@@ -97,7 +93,14 @@ class ProductAdmin(ImportExportModelAdmin):
     empty_value_display = ADMIN_EMPTY_VALUE_DISPLAY
 
     def preview(self, obj):
-        return mark_safe(f'<img src="{obj.image.url}" style="max-height: 150px;">')
+        images_html = ''
+        if obj.images is None:
+            return mark_safe(images_html)
+        all_images = (obj.images.main_image, obj.images.first_image, obj.images.second_image, obj.images.third_image)
+        for image in all_images:
+            if image:
+                images_html += f'<img src="{image.url}" style="max-height: 150px;">'
+        return mark_safe(images_html)
 
 
 @admin.register(CartModel)
@@ -151,3 +154,18 @@ class CollectionAdmin(ImportExportModelAdmin):
     search_fields = list_display
     list_filter = list_display
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(FurniturePicture)
+class FurniturePictureAdmin(ImportExportModelAdmin):
+    list_display = ('main_image', 'first_image', 'second_image', 'third_image')
+    search_fields = list_display
+    list_filter = list_display
+
+
+@admin.register(ProductType)
+class ProductTypeAdmin(ImportExportModelAdmin):
+    list_display = ('pk', 'name')
+    search_fields = ('name',)
+    list_filter = ('name',)
+    empty_value_display = ADMIN_EMPTY_VALUE_DISPLAY
