@@ -3,8 +3,9 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.product.filters import ProductsFilter
@@ -69,6 +70,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """Выводит информацию о товаре и таких же товарах в другом цвете."""
+
         product = self.get_object()
         similar_products = self.get_queryset().filter(category=product.category)
         other_color_same_products = similar_products.filter(
@@ -79,20 +81,34 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 'product': product,
                 'other_color_same_products': other_color_same_products,
                 'similar_products': similar_products,
-            }
+            },
+            context={'request': request},
         )
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post', 'delete'], url_path='favorite')
+    @staticmethod
+    def _fetch_favorite_products_serializer_data(request):
+        """Возвращает сериализованные данные избранных товаров ползователя."""
+        favorite_products = Product.objects.filter(favorites__user=request.user)
+        return ShortProductSerializer(favorite_products, many=True, context={'request': request}).data
+
+    @action(detail=True, methods=['post'], permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk):
+        """Добавление товара в список избранных товаров пользователя."""
+
         product = get_object_or_404(Product, pk=pk)
-        if request.method == 'POST':
-            serializer = ShortProductSerializer(product, data=request.data, context={'request': request})
-            serializer.is_valid(raise_exception=True)
-            Favorite.objects.get_or_create(user=request.user, product=product)
-            return Response(serializer.data, status=HTTP_201_CREATED)
+        Favorite.objects.get_or_create(user=request.user, product=product)
+        serializer_data = self._fetch_favorite_products_serializer_data(request=request)
+        return Response(serializer_data, status=HTTP_201_CREATED)
+
+    @favorite.mapping.delete
+    def unfavorite(self, request, pk):
+        """Удаление товара из списока избранных товаров пользователя."""
+
+        product = get_object_or_404(Product, pk=pk)
         get_object_or_404(Favorite, user=request.user, product=product).delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+        serializer_data = self._fetch_favorite_products_serializer_data(request=request)
+        return Response(serializer_data, status=HTTP_200_OK)
 
     @action(detail=False)
     def popular(self, request, top=6):
