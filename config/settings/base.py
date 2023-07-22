@@ -191,7 +191,7 @@ X_FRAME_OPTIONS = 'DENY'
 EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.filebased.EmailBackend')
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
-EMAIL_FILE_PATH = str(BASE_DIR / 'sent_emails')
+EMAIL_FILE_PATH = '/var/www/django/email'
 SITE_EMAIL = env('SITE_EMAIL', default='furniture@ofs.ru')
 
 # ADMIN

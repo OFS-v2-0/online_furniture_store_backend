@@ -1,9 +1,14 @@
+import glob
+import os
+
+from django.conf import settings
 from django.db.models import Sum
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -137,3 +142,27 @@ class CollectionViewSet(ReadOnlyModelViewSet):
         collection = self.get_object()
         serializer = self.get_serializer(collection.products, many=True)
         return Response(serializer.data)
+
+
+def _get_latest_file(directory):
+    """Возвращает имя полседненго изменённого файла в директории."""
+    list_of_files = glob.glob(directory + '/*')
+    if not list_of_files:
+        raise Http404('Директория пустая или не существует')
+    latest_file = max(list_of_files, key=os.path.getctime)
+    return latest_file
+
+
+@api_view(('POST',))
+@permission_classes((IsAdminUser,))
+def download_last_file(request):
+    """Скачивает последний изменённый файл из директории EMAIL_FILE_PATH."""
+    file_path = _get_latest_file(settings.EMAIL_FILE_PATH)
+
+    if not os.path.exists(file_path):
+        raise Http404('Файл не найден')
+
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
+        return response
