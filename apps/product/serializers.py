@@ -78,7 +78,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(method_name='analyze_is_favorited')
     discount = serializers.SerializerMethodField(method_name='extract_discount')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
-    images = Base64ImageField(required=True)
+    images = FurniturePictureSerializer()
     available_quantity = serializers.SerializerMethodField(method_name='fetch_available_quantity')
     product_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
 
@@ -126,7 +126,6 @@ class ProductSerializer(ShortProductSerializer):
     category = CategorySerializer()
     color = ColorSerializer()
     collection = CollectionSerializer()
-    images = FurniturePictureSerializer()
     material = MaterialSerializer()
     legs_material = MaterialSerializer()
 
@@ -136,7 +135,6 @@ class ProductSerializer(ShortProductSerializer):
             'material',
             'legs_material',
             'collection',
-            'images',
             'width',
             'height',
             'length',
