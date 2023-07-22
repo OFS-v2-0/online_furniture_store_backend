@@ -44,8 +44,8 @@ RUN groupadd -g "${GID}" -r django \
   && useradd -d ${APP_HOME} -g django -l -r -u "${UID}" django \
   && chown django:django -R ${APP_HOME} \
   # Static and media files:
-  && mkdir -p '/var/www/django/static' '/var/www/django/media' \
-  && chown django:django '/var/www/django/static' '/var/www/django/media'
+  && mkdir -p '/var/www/django/static' '/var/www/django/media' '/var/www/django/email'\
+  && chown django:django '/var/www/django/static' '/var/www/django/media' '/var/www/django/email'
 
 
 # Install required system dependencies
