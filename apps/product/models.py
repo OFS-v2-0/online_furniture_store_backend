@@ -58,6 +58,9 @@ class FurniturePicture(models.Model):
         verbose_name_plural = 'Изображения мебели'
         ordering = ('pk',)
 
+    def __str__(self):
+        return self.main_image.name
+
 
 class Color(models.Model):
     """Модель цветов товаров в магазине."""
@@ -98,7 +101,7 @@ class FurnitureDetails(models.Model):
     """Особенности конструкции"""
 
     purpose = models.CharField(verbose_name='Назначение', max_length=50, blank=True, null=True)
-    furniture_type = models.CharField(verbose_name='Тип конструкции', max_length=50, blank=True, null=True)
+    furniture_type = models.CharField(verbose_name='Тип', max_length=50, blank=True, null=True)
     construction = models.CharField(verbose_name='Конструкция', max_length=50, blank=True, null=True)
     swing_mechanism = models.CharField(verbose_name='Механизм качания', max_length=50, blank=True, null=True)
     armrest_adjustment = models.CharField(
@@ -132,12 +135,33 @@ class FurnitureDetails(models.Model):
         return ', '.join(fields) if fields else 'FurnitureDetails object'
 
 
+class ProductType(models.Model):
+    """Тип мебели."""
+
+    name = models.CharField(verbose_name='Название типа мебели', max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = 'Тип мебели'
+        verbose_name_plural = 'Типы мебели'
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     """Модель Продуктов(Товаров) магазина"""
 
     article = models.PositiveIntegerField(verbose_name='Артикул', unique=True)
     name = models.CharField(verbose_name='Название', max_length=20)
-    product_type = models.CharField(verbose_name='Тип мебели', max_length=20)
+    product_type = models.ForeignKey(
+        ProductType,
+        on_delete=models.SET_NULL,
+        verbose_name='Тип мебели',
+        related_name='products',
+        blank=True,
+        null=True,
+    )
     width = models.PositiveSmallIntegerField(verbose_name='Ширина, см', validators=[MaxValueValidator(15000)])
     height = models.PositiveSmallIntegerField(verbose_name='Высота, см', validators=[MaxValueValidator(15000)])
     length = models.PositiveSmallIntegerField(verbose_name='Длина, см', validators=[MaxValueValidator(15000)])
@@ -146,9 +170,29 @@ class Product(models.Model):
     )
     color = models.ForeignKey(Color, verbose_name='Цвет', on_delete=models.CASCADE, related_name='products')
     images = models.ForeignKey(
-        FurniturePicture, verbose_name='изображения', on_delete=models.CASCADE, related_name='products'
+        FurniturePicture,
+        verbose_name='Изображения товара',
+        on_delete=models.SET_NULL,
+        related_name='products',
+        blank=True,
+        null=True,
     )
-    material = models.ManyToManyField(Material, verbose_name='материалы', related_name='products')
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.SET_NULL,
+        verbose_name='Материал основания',
+        related_name='products',
+        blank=True,
+        null=True,
+    )
+    legs_material = models.ForeignKey(
+        Material,
+        verbose_name='Материал опор',
+        on_delete=models.SET_NULL,
+        related_name='products_legs',
+        blank=True,
+        null=True,
+    )
     furniture_details = models.ForeignKey(
         FurnitureDetails,
         verbose_name='Особенности конструкции',

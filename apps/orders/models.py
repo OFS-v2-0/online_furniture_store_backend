@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models import Sum, UniqueConstraint
 
 from apps.product.models import Product
-from common.validators import validate_phone
 
 User = get_user_model()
 
@@ -26,7 +25,6 @@ class Delivery(models.Model):
     """Модель доставки"""
 
     address = models.CharField(verbose_name='Адрес', max_length=200)
-    phone = models.CharField(verbose_name='Телефон', max_length=30, validators=(validate_phone,))
     type_delivery = models.ForeignKey(
         DeliveryType,
         verbose_name='Способ доставки',
@@ -35,8 +33,10 @@ class Delivery(models.Model):
         null=True,
         blank=True,
     )
-    created = models.DateTimeField(verbose_name='Дата оформления', auto_now_add=True)
-    updated = models.DateTimeField(verbose_name='Дата обновления', auto_now=True)
+    comment = models.CharField(verbose_name='Комментарий к доставек', blank=True)
+    datetime_from = models.DateTimeField(verbose_name='Дата/время доставки от')
+    datetime_to = models.DateTimeField(verbose_name='Дата/время доставки до')
+    elevator = models.BooleanField(verbose_name='Наличие лифта', default=False)
 
     class Meta:
         verbose_name = 'Доставка'
@@ -94,7 +94,7 @@ class OrderProduct(models.Model):
         return f'{self.order}, товар: {self.product}'
 
     def save(self, *args, **kwargs):
-        self.price = self.product.price
+        self.price = self.product.calculate_total_price()
         self.cost = self.price * self.quantity
         super().save(*args, **kwargs)
 

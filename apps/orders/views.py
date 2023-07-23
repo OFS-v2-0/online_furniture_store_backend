@@ -61,7 +61,7 @@ class OrderViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, Generic
         order = self.get_object()
         order.paid = True
         order.save(update_fields=['paid'])
-        return Response({'detail': 'Заказ успешно оплачен.'}, status=status.HTTP_201_CREATED)
+        return Response({'detail': 'Заказ оплачен.'}, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def save_total_cost(self, request, pk):

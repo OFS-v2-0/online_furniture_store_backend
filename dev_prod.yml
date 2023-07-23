@@ -13,7 +13,6 @@ services:
   django: &django
     image: $BACKEND_IMAGE_TAG:$BACKEND_IMAGE_VERSION
     container_name: online_furniture_store_dev_prod_django
-
     restart: unless-stopped
     depends_on:
       - postgres

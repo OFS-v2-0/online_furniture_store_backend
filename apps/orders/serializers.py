@@ -25,7 +25,7 @@ class DeliverySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Delivery
-        fields = ('id', 'address', 'phone', 'type_delivery', 'created', 'updated')
+        fields = ('id', 'address', 'type_delivery', 'comment', 'datetime_from', 'datetime_to', 'elevator')
 
 
 class OrderProductWriteSerializer(serializers.ModelSerializer):
@@ -40,11 +40,11 @@ class OrderProductReadSerializer(serializers.ModelSerializer):
     """Сериализатор для чтения товаров в заказе из модели OrderProduct."""
 
     id = serializers.ReadOnlyField(source='product.id')
-    products = serializers.ReadOnlyField(source='product.name')
+    name = serializers.ReadOnlyField(source='product.name')
 
     class Meta:
         model = OrderProduct
-        fields = ('id', 'products', 'quantity', 'price', 'cost')
+        fields = ('id', 'name', 'quantity', 'price', 'cost')
 
 
 class OrderReadSerializer(serializers.ModelSerializer):
@@ -118,9 +118,9 @@ class OrderWriteSerializer(serializers.ModelSerializer):
                 OrderProduct(
                     order=order,
                     product=product.get('product'),
-                    price=product.get('product').price,
+                    price=product.get('product').calculate_total_price(),
                     quantity=product['quantity'],
-                    cost=product.get('product').price * product['quantity'],
+                    cost=product.get('product').calculate_total_price() * product['quantity'],
                 )
                 for product in products
             ]

@@ -53,8 +53,19 @@ class DiscountSerializer(serializers.ModelSerializer):
         fields = ('discount',)
 
 
+class CollectionSerializer(serializers.ModelSerializer):
+    """Сериалайзер для модели Collection."""
+
+    image = Base64ImageField()
+
+    class Meta:
+        model = Collection
+        fields = ('id', 'name', 'slug', 'image')
+        read_only_fields = fields
+
+
 class FurniturePictureSerializer(serializers.ModelSerializer):
-    """Сериалайзер для модели Discount."""
+    """Сериалайзер для отображения изображений товара."""
 
     class Meta:
         model = FurniturePicture
@@ -67,14 +78,16 @@ class ShortProductSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(method_name='analyze_is_favorited')
     discount = serializers.SerializerMethodField(method_name='extract_discount')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
-    images = Base64ImageField(source='images.main_image', required=True)
+    images = FurniturePictureSerializer()
     available_quantity = serializers.SerializerMethodField(method_name='fetch_available_quantity')
+    product_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
 
     class Meta:
         model = Product
         fields = (
             'id',
             'article',
+            'product_type',
             'name',
             'is_favorited',
             'price',
@@ -104,18 +117,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
 
     def fetch_available_quantity(self, obj):
         """Возвращает доступное для заказ количество товара на складе."""
-        return 5
-
-
-class CollectionSerializer(serializers.ModelSerializer):
-    """Сериалайзер для модели Collection."""
-
-    image = Base64ImageField()
-
-    class Meta:
-        model = Collection
-        fields = ('id', 'name', 'slug', 'image')
-        read_only_fields = fields
+        return obj.storehouse.quantity
 
 
 class ProductSerializer(ShortProductSerializer):
@@ -124,15 +126,15 @@ class ProductSerializer(ShortProductSerializer):
     category = CategorySerializer()
     color = ColorSerializer()
     collection = CollectionSerializer()
-    images = FurniturePictureSerializer()
-    material = MaterialSerializer(many=True)
+    material = MaterialSerializer()
+    legs_material = MaterialSerializer()
 
     class Meta(ShortProductSerializer.Meta):
         fields = ShortProductSerializer.Meta.fields + (
             'category',
             'material',
+            'legs_material',
             'collection',
-            'images',
             'width',
             'height',
             'length',
@@ -145,3 +147,11 @@ class ProductSerializer(ShortProductSerializer):
             'color',
         )
         read_only_fields = ('category', 'material', 'purpose', 'is_favorited')
+
+
+class ProductAllColors(serializers.Serializer):
+    """Сериализатор товара и таких же товаров в другом цвете."""
+
+    product = ProductSerializer()
+    other_color_same_products = ProductSerializer(many=True)
+    similar_products = ProductSerializer(many=True)
