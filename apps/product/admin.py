@@ -94,12 +94,8 @@ class ProductAdmin(ImportExportModelAdmin):
 
     def preview(self, obj):
         images_html = ''
-        if obj.images is None:
-            return mark_safe(images_html)
-        all_images = (obj.images.main_image, obj.images.first_image, obj.images.second_image, obj.images.third_image)
-        for image in all_images:
-            if image:
-                images_html += f'<img src="{image.url}" style="max-height: 150px;">'
+        if obj.images and obj.images.main_image:
+            images_html = f'<img src="{obj.images.main_image.url}" style="max-height: 150px;">'
         return mark_safe(images_html)
 
 
