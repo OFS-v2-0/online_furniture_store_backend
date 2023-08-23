@@ -1,3 +1,4 @@
+"""Модуль представления для приложения отзывов."""
 from rest_framework.viewsets import ModelViewSet
 
 from apps.reviews.models import Review

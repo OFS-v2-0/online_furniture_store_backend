@@ -1,3 +1,4 @@
+"""Настройка административной панели для объектов приложение product."""
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
@@ -23,11 +24,15 @@ User = get_user_model()
 
 
 class CartItemInLine(admin.TabularInline):
+    """Инлайн для отображения товара в административной панели."""
+
     model = CartItem
     extra = 1
 
 
 class DiscountInLine(admin.TabularInline):
+    """Инлайн для отображения скидки на товар в административной панели."""
+
     model = Discount.applied_products.through
     extra = 1
     verbose_name = 'Скидка'
@@ -35,6 +40,8 @@ class DiscountInLine(admin.TabularInline):
 
 
 class FavoriteInLine(admin.TabularInline):
+    """Инлайн для отображения нахождения товара в избранном."""
+
     model = Favorite
     extra = 1
     verbose_name_plural = 'В избранном'
@@ -42,6 +49,8 @@ class FavoriteInLine(admin.TabularInline):
 
 @admin.register(Category)
 class CategoriesAdmin(ImportExportModelAdmin):
+    """Админ модель для категорий товаров магазина."""
+
     list_display = ('pk', 'name', 'slug')
     search_fields = ('name',)
     ordering = ('pk',)
@@ -51,6 +60,8 @@ class CategoriesAdmin(ImportExportModelAdmin):
 
 @admin.register(Material)
 class MaterialAdmin(ImportExportModelAdmin):
+    """Админ модель для материалов товаров магазина."""
+
     list_display = ('pk', 'name')
     search_fields = ('name',)
     ordering = ('pk',)
@@ -59,6 +70,8 @@ class MaterialAdmin(ImportExportModelAdmin):
 
 @admin.register(FurnitureDetails)
 class FurnitureDetailsAdmin(ImportExportModelAdmin):
+    """Админ модель для характеристик товаров магазина."""
+
     list_display = ('pk', 'purpose', 'furniture_type', 'construction', 'swing_mechanism', 'armrest_adjustment')
     search_fields = ('purpose', 'furniture_type', 'construction', 'swing_mechanism', 'armrest_adjustment')
     list_filter = ('purpose', 'furniture_type', 'construction', 'swing_mechanism', 'armrest_adjustment')
@@ -68,6 +81,8 @@ class FurnitureDetailsAdmin(ImportExportModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
+    """Админ модель для товаров магазина."""
+
     list_display = (
         'pk',
         'article',
@@ -93,6 +108,7 @@ class ProductAdmin(ImportExportModelAdmin):
     empty_value_display = ADMIN_EMPTY_VALUE_DISPLAY
 
     def preview(self, obj):
+        """Функция отображения изображений товаров в админке."""
         images_html = ''
         if obj.images and obj.images.main_image:
             images_html = f'<img src="{obj.images.main_image.url}" style="max-height: 150px;">'
@@ -101,6 +117,8 @@ class ProductAdmin(ImportExportModelAdmin):
 
 @admin.register(CartModel)
 class CartAdmin(admin.ModelAdmin):
+    """Админ модель для корзины пользователя."""
+
     list_display = ('pk', 'user', 'created_at', 'updated_at')
     inlines = (CartItemInLine,)
     search_fields = ('user', 'created_at', 'updated_at')
@@ -110,6 +128,8 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
+    """Админ модель для товаров в корзине."""
+
     list_display = ('pk', 'cart', 'product', 'quantity', 'created_at', 'updated_at')
     search_fields = ('cart', 'product')
     list_filter = ('cart', 'product')
@@ -118,6 +138,8 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    """Админ модель для избранных товаров пользователей."""
+
     list_display = ('pk', 'product', 'user')
     search_fields = ('product', 'user')
     list_filter = ('product', 'user')
@@ -126,6 +148,8 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(Color)
 class ColorAdmin(ImportExportModelAdmin):
+    """Админ модель для модели цветов продуктов."""
+
     list_display = ('pk', 'name')
     search_fields = ('name',)
     list_filter = ('name',)
@@ -135,6 +159,8 @@ class ColorAdmin(ImportExportModelAdmin):
 
 @admin.register(Discount)
 class DiscountAdmin(ImportExportModelAdmin):
+    """Админ модель для модели скидок на ассортимент."""
+
     list_display = ('pk', 'discount', 'discount_created_at', 'discount_end_at')
     exclude = ('applied_products',)
     inlines = (DiscountInLine,)
@@ -146,6 +172,8 @@ class DiscountAdmin(ImportExportModelAdmin):
 
 @admin.register(Collection)
 class CollectionAdmin(ImportExportModelAdmin):
+    """Админ модель для модели скидок на ассортимент."""
+
     list_display = ('name', 'slug')
     search_fields = list_display
     list_filter = list_display
@@ -154,6 +182,8 @@ class CollectionAdmin(ImportExportModelAdmin):
 
 @admin.register(FurniturePicture)
 class FurniturePictureAdmin(ImportExportModelAdmin):
+    """Админ модель для модели характеристик товаров."""
+
     list_display = ('main_image', 'first_image', 'second_image', 'third_image')
     search_fields = list_display
     list_filter = list_display
@@ -161,6 +191,8 @@ class FurniturePictureAdmin(ImportExportModelAdmin):
 
 @admin.register(ProductType)
 class ProductTypeAdmin(ImportExportModelAdmin):
+    """Админ модель для модели типа товаров."""
+
     list_display = ('pk', 'name')
     search_fields = ('name',)
     list_filter = ('name',)

@@ -1,3 +1,4 @@
+"""Настройки для локального запуска проекта."""
 from config.settings.base import *  # noqa: F403
 from config.settings.base import env
 

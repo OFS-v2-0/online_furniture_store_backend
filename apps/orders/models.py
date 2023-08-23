@@ -1,3 +1,4 @@
+"""Модели приложения заказов."""
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -9,7 +10,7 @@ User = get_user_model()
 
 
 class DeliveryType(models.Model):
-    """Модель способов доставки"""
+    """Модель способов доставки."""
 
     name = models.CharField(verbose_name='Способ доставки', max_length=20, unique=True)
 
@@ -22,7 +23,7 @@ class DeliveryType(models.Model):
 
 
 class Delivery(models.Model):
-    """Модель доставки"""
+    """Модель доставки."""
 
     address = models.CharField(verbose_name='Адрес', max_length=200)
     type_delivery = models.ForeignKey(
@@ -47,7 +48,7 @@ class Delivery(models.Model):
 
 
 class Order(models.Model):
-    """Модель заказов"""
+    """Модель заказов."""
 
     user = models.ForeignKey(
         User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name='orders', null=True
@@ -73,7 +74,7 @@ class Order(models.Model):
 
 
 class OrderProduct(models.Model):
-    """Модель товаров в заказе"""
+    """Модель товаров в заказе."""
 
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE, related_name='order_products')
     product = models.ForeignKey(Product, verbose_name='Товар', on_delete=models.CASCADE, related_name='order_products')
@@ -103,7 +104,7 @@ class OrderProduct(models.Model):
 
 
 class Storehouse(models.Model):
-    """Модель товаров на складе"""
+    """Модель товаров на складе."""
 
     product = models.OneToOneField(Product, verbose_name='Товар', on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(verbose_name='Количество товара', default=0)

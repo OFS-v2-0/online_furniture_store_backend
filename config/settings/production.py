@@ -1,3 +1,4 @@
+"""Файл настроек django приложения для production окружения."""
 from config.settings.base import *  # noqa: F403
 from config.settings.base import env
 

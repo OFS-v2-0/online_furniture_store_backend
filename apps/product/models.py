@@ -1,3 +1,4 @@
+"""Модели приложения product."""
 from decimal import Decimal
 
 from django.core.validators import MaxValueValidator
@@ -98,7 +99,7 @@ class Collection(models.Model):
 
 
 class FurnitureDetails(models.Model):
-    """Особенности конструкции"""
+    """Особенности конструкции."""
 
     purpose = models.CharField(verbose_name='Назначение', max_length=50, blank=True, null=True)
     furniture_type = models.CharField(verbose_name='Тип', max_length=50, blank=True, null=True)
@@ -150,7 +151,7 @@ class ProductType(models.Model):
 
 
 class Product(models.Model):
-    """Модель Продуктов(Товаров) магазина"""
+    """Модель Продуктов(Товаров) магазина."""
 
     article = models.PositiveIntegerField(verbose_name='Артикул', unique=True)
     name = models.CharField(verbose_name='Название', max_length=20)
@@ -287,7 +288,7 @@ class CartModel(models.Model):
 
 
 class CartItem(models.Model):
-    """Модель содержимого корзины пользователя"""
+    """Модель содержимого корзины пользователя."""
 
     cart = models.ForeignKey(CartModel, verbose_name='Корзина', on_delete=models.CASCADE, related_name='cartitems')
     product = models.ForeignKey(Product, verbose_name='Товар', on_delete=models.CASCADE, related_name='cartitems')

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Файл для запуска проекта с необходимыми настройками."""
 import os
 import sys
 from pathlib import Path

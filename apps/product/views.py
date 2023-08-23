@@ -1,3 +1,4 @@
+"""Модуль представления для приложения products."""
 import glob
 import os
 
@@ -75,7 +76,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """Выводит информацию о товаре и таких же товарах в другом цвете."""
-
         product = self.get_object()
         similar_products = self.get_queryset().filter(category=product.category)
         other_color_same_products = similar_products.filter(
@@ -100,7 +100,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk):
         """Добавление товара в список избранных товаров пользователя."""
-
         product = get_object_or_404(Product, pk=pk)
         Favorite.objects.get_or_create(user=request.user, product=product)
         serializer_data = self._fetch_favorite_products_serializer_data(request=request)
@@ -109,7 +108,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
     @favorite.mapping.delete
     def unfavorite(self, request, pk):
         """Удаление товара из списока избранных товаров пользователя."""
-
         product = get_object_or_404(Product, pk=pk)
         get_object_or_404(Favorite, user=request.user, product=product).delete()
         serializer_data = self._fetch_favorite_products_serializer_data(request=request)
@@ -118,7 +116,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
     @action(detail=False)
     def popular(self, request, top=6):
         """Возвращает топ популярных товаров."""
-
         popular_products = (
             Product.objects.annotate(total_quantity=Sum('order_products__quantity'))
             .filter(total_quantity__gt=0)

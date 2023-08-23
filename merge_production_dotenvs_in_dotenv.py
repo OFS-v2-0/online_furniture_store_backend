@@ -1,3 +1,4 @@
+"""Файл настроек виртуального окружения проекта."""
 import os
 from collections.abc import Sequence
 from pathlib import Path
@@ -9,6 +10,7 @@ DOTENV_FILE = BASE_DIR / '.env'
 
 
 def merge(output_file: Path, files_to_merge: Sequence[Path]) -> None:
+    """Функция слияния виртуальных окружений."""
     merged_content = ''
     for merge_file in files_to_merge:
         merged_content += merge_file.read_text()

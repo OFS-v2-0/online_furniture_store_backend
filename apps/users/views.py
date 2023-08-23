@@ -1,3 +1,4 @@
+"""Классы представлений для пользователей."""
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework.decorators import action
@@ -18,6 +19,7 @@ class UserViewSet(DjoserUserViewSet):
 
     @action(detail=False)
     def my_orders(self, request):
+        """Заказы пользователя."""
         queryset = Order.objects.filter(user=request.user)
         serializer = OrderReadSerializer(queryset, many=True)
         return Response(serializer.data)
