@@ -1,3 +1,4 @@
+"""Views для операций корзины."""
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -41,10 +42,7 @@ def cart_items(request, pk=None):
 )
 @api_view(['POST'])
 def add_item(request):
-    """
-    Добавляет товар в корзину или обновляет его количество.
-    Количество товара изменяется на приходящее количество товара.
-    """
+    """Добавляет товар в корзину/обновляет его количество. Количество изменяется на приходящее количество товара."""
     user = request.user
     if not user.is_authenticated:
         cart = Cart(request=request)

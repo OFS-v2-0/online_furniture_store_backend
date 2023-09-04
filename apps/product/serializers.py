@@ -1,3 +1,4 @@
+"""Сериализаторы для приложения product."""
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -98,10 +99,7 @@ class ShortProductSerializer(serializers.ModelSerializer):
         )
 
     def analyze_is_favorited(self, obj):
-        """
-        Возвращает True, если товар добавлен в избранное для ползователя.
-        Возвращает False, если пользователь не авторизован или товар не в избранном у пользователя.
-        """
+        """Возвращает True, если товар добавлен в избранное для авторизированного пользователя."""
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False

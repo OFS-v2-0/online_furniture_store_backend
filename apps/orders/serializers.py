@@ -1,3 +1,4 @@
+"""Сериализаторы приложения доставки."""
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Sum
@@ -72,8 +73,7 @@ class OrderWriteSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        """Сохраняет заказ в базе, обрновляет склад."""
-
+        """Сохраняет заказ в базе, обновляет склад."""
         if user_data := validated_data.pop('user', {}):
             user = User.objects.create_user(**user_data)
         else:
@@ -90,7 +90,6 @@ class OrderWriteSerializer(serializers.ModelSerializer):
     @staticmethod
     def update_storehouse(products):
         """Проверяет и обновляет кличество на складе после заказа."""
-
         storehouse = []
         for product in products:
             ordered_product = product.get('product')
@@ -112,7 +111,6 @@ class OrderWriteSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def add_products(order, products):
         """Сохраняет в базу данные заказа в OrderProduct, общую стоимость в Order."""
-
         OrderProduct.objects.bulk_create(
             [
                 OrderProduct(
@@ -130,4 +128,5 @@ class OrderWriteSerializer(serializers.ModelSerializer):
         order.save()
 
     def to_representation(self, instance):
+        """Фукнция отображения заказа."""
         return OrderReadSerializer(instance, context={'request': self.context.get('request')}).data

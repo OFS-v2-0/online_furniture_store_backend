@@ -1,3 +1,4 @@
+"""Модели приложения users."""
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
@@ -10,9 +11,7 @@ from common.validators import validate_phone
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """
-    Настраиваемая модель пользователя.
-    """
+    """Настраиваемая модель пользователя."""
 
     email = EmailField('Email', unique=True)
     phone = CharField('Телефон', validators=[validate_phone], max_length=30, blank=True, null=True)
@@ -33,22 +32,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
-        """
-        Возвращает имя и фамилию.
-        """
+        """Возвращает имя и фамилию."""
         full_name = f'{self.first_name} {self.last_name}'
         return full_name.strip()
 
     def get_short_name(self):
-        """
-        Возвращает имя пользователя.
-        """
+        """Возвращает имя пользователя."""
         return self.first_name
 
     def email_user(self, subject, message, from_email=None, **kwargs):
-        """
-        Высылает письмо пользователю.
-        """
+        """Высылает письмо пользователю."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
     class Meta:

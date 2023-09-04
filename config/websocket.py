@@ -1,4 +1,8 @@
+"""Модуль подключения функционала вебсокетов."""
+
+
 async def websocket_application(scope, receive, send):
+    """Асинхронная функция для подсоединения вебсокетов."""
     while True:
         event = await receive()
 

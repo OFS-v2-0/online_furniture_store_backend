@@ -1,3 +1,4 @@
+"""Views для приложения заказов."""
 from django.db import IntegrityError
 from django.db.models import Sum
 from rest_framework import status, viewsets
@@ -57,7 +58,6 @@ class OrderViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, Generic
     @action(detail=True, methods=['post'])
     def payment_confirmation(self, request, pk):
         """Оплата заказа."""
-
         order = self.get_object()
         order.paid = True
         order.save(update_fields=['paid'])
@@ -66,7 +66,6 @@ class OrderViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, Generic
     @action(detail=True, methods=['post'])
     def save_total_cost(self, request, pk):
         """Сохранение общей стоимости заказа."""
-
         order = self.get_object()
         order.total_cost = order.order_products.aggregate(Sum('cost'))['cost__sum']
         order.save(update_fields=['total_cost'])

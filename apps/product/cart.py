@@ -7,6 +7,7 @@ class Cart:
     """Корзина товаров не авторизованного пользователя."""
 
     def __init__(self, request, user=None):
+        """Инициализация корзины."""
         self.session = request.session
         self.user = user
         self.cart = self.session.get(settings.CART_SESSION_ID) or {}

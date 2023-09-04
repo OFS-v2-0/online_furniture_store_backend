@@ -1,3 +1,4 @@
+"""Сериализаторы приложения отзывов."""
 from rest_framework import serializers
 
 from apps.product.serializers import ShortProductSerializer

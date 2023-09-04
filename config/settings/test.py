@@ -1,6 +1,4 @@
-"""
-With these settings, tests run faster.
-"""
+"""With these settings, tests run faster."""
 
 from config.settings.base import *  # noqa: F403
 from config.settings.base import env

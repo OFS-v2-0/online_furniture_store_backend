@@ -17,8 +17,8 @@ class UserAdmin(auth_admin.UserAdmin):
         ('Разрешения', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
         ('Важные даты', {'fields': ('last_login', 'date_joined')}),
     )
-    list_display = ['email', 'first_name', 'last_name', 'phone', 'birthday']
-    search_fields = ['email', 'last_name']
-    list_filter = ['is_superuser']
+    list_display = ('email', 'first_name', 'last_name', 'phone', 'birthday',)
+    search_fields = ('email', 'last_name',)
+    list_filter = ('is_superuser',)
     ordering = ('-date_joined',)
     add_fieldsets = ((None, {'classes': ('wide',), 'fields': ('email', 'password1', 'password2')}),)

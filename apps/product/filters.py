@@ -1,3 +1,4 @@
+"""Модуль с фильтрами. """
 from django.db.models import F
 from django_filters import rest_framework as filters
 
@@ -5,6 +6,8 @@ from apps.product.models import Category, Collection, Product
 
 
 class ProductsFilter(filters.FilterSet):
+    """Фильтр для приложения продукты."""
+
     category = filters.ModelMultipleChoiceFilter(
         queryset=Category.objects.all(), field_name='category__slug', to_field_name='slug'
     )
@@ -41,16 +44,19 @@ class ProductsFilter(filters.FilterSet):
         )
 
     def filter_is_favorited(self, queryset, name, value):
+        """Фильтрация товаров по тем, что добавлены в избранное."""
         if value and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_in_stock(self, queryset, name, value):
+        """Фильтрация товаров по тем, что есть на складе."""
         if value:
             return queryset.filter(storehouse__quantity__gt=0)
         return queryset
 
     def filter_total_price(self, queryset, name, value):
+        """Фильтрация товаров по цене."""
         if value is not None:
             queryset = queryset.annotate(total_price=F('price') * (1 - F('discounts') / 100))
             min_total_price = self.data.get('min_total_price')
@@ -64,4 +70,5 @@ class ProductsFilter(filters.FilterSet):
         return queryset
 
     def filter_name(self, queryset, name, value):
+        """Фильтрация товаров по названию."""
         return queryset.filter(name__icontains=value)
