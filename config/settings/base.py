@@ -257,6 +257,9 @@ ADMIN_EMPTY_VALUE_DISPLAY = '--пусто--'
 
 CART_SESSION_ID = 'cart'
 
+FAV_SESSION_ID = 'favorite'
+
+
 SITE_URL = env('SITE_URL', default='https://online-furniture-store.github.io/online_furniture_store_frontend/')
 
 # Djoser settings

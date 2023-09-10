@@ -3,7 +3,7 @@ from django.conf import settings
 from apps.product.models import Product
 
 
-class Cart:
+class CartAndFavorites:
     """Корзина товаров не авторизованного пользователя."""
 
     def __init__(self, request, user=None):
@@ -11,6 +11,7 @@ class Cart:
         self.session = request.session
         self.user = user
         self.cart = self.session.get(settings.CART_SESSION_ID) or {}
+        self.favorites = self.session.get(settings.FAV_SESSION_ID) or {}
 
     def __len__(self):
         """Количество всех товаров в корзине."""
@@ -33,6 +34,7 @@ class Cart:
     def save(self):
         """Сохраняет данные в сессии."""
         self.session[settings.CART_SESSION_ID] = self.cart
+        self.session[settings.FAV_SESSION_ID] = self.favorites
         self.session.modified = True
 
     def remove(self, product_id):
@@ -45,3 +47,26 @@ class Cart:
         """Удаляет корзину из сессии."""
         del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
+
+    # Favorites
+    def add_to_favorites(self, product_id):
+        """Добавить товар в избранное."""
+        self.favorites[str(product_id)] = True
+        self.save()
+
+    def remove_from_favorites(self, product_id):
+        """Удалить товар из избранного."""
+        if str(product_id) in self.favorites:
+            del self.favorites[str(product_id)]
+            self.save()
+
+    def clear_favorites(self):
+        """Удаляет корзину из сессии."""
+        del self.session[settings.FAV_SESSION_ID]
+        self.session.modified = True
+
+    def extract_items_favorites(self):
+        """Возвращает содержимое избранного."""
+        product_ids = self.favorites.keys()
+        products = Product.objects.filter(id__in=product_ids)
+        return {'products': products}
