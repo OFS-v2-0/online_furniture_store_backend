@@ -8,7 +8,6 @@ from apps.product.serializers import ShortProductSerializer
 
 class CartItemSerializer(serializers.ModelSerializer):
     """Сериализатор данных о товаре в корзине."""
-
     product = ShortProductSerializer()
 
     class Meta:
@@ -18,7 +17,6 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartItemCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания записи содержимого корзины."""
-
     class Meta:
         model = CartItem
         fields = ('product', 'quantity')
@@ -26,7 +24,6 @@ class CartItemCreateSerializer(serializers.ModelSerializer):
 
 class CartModelSerializer(serializers.ModelSerializer):
     """Сериализатор корзины пользователя."""
-
     total_quantity = serializers.SerializerMethodField(method_name='calculate_total_quantity')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
     total_discount_price = serializers.SerializerMethodField(method_name='calculate_total_discount_price')
@@ -57,14 +54,12 @@ class CartModelSerializer(serializers.ModelSerializer):
 
 class CartItemDictSerializer(serializers.Serializer):
     """Сериализатор данных о товаре в корзине."""
-
     product = ShortProductSerializer()
     quantity = serializers.IntegerField()
 
 
 class CartModelDictSerializer(serializers.Serializer):
     """Сериализатор корзины пользователя."""
-
     total_quantity = serializers.SerializerMethodField(method_name='calculate_total_quantity')
     total_price = serializers.SerializerMethodField(method_name='calculate_total_price')
     total_discount_price = serializers.SerializerMethodField(method_name='calculate_total_discount_price')
@@ -95,10 +90,8 @@ class CartItemCreateDictSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(required=True, min_value=1)
 
 
-# Fav
-class FavoriteSerializer(serializers.ModelSerializer):
-    """Сериализатор для избранных товаров."""
-
+class FavoriteItemSerializer(serializers.ModelSerializer):
+    """Сериализатор для товара в избранном."""
     product = ShortProductSerializer()
 
     class Meta:
@@ -106,28 +99,11 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('product',)
 
 
+class FavoriteSerializer(serializers.Serializer):
+    """Сериализатор для списка товаров в избранном."""
+    products = ShortProductSerializer(many=True)
+
+
 class FavoriteCreateSerializer(serializers.Serializer):
     """Сериализатор для запроса добавления товара в избранное."""
-
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), source='product_id')
-
-    class Meta:
-        model = Favorite
-        fields = ('product',)
-
-
-class FavModelDictSerializer(serializers.Serializer):
-    """Сериализатор корзины пользователя."""
-
-    products = ShortProductSerializer(many=True, read_only=True)
-
-
-class FavoriteListSerializer(serializers.Serializer):
-    """Сериализатор для списка избранных товаров пользователя."""
-
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    products = FavoriteSerializer(many=True, read_only=True, source='favorites')
-
-    class Meta:
-        model = Favorite
-        fields = ('user', 'products')
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects)
