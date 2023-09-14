@@ -12,7 +12,9 @@ from apps.product.cart_serializers import (
     CartItemCreateSerializer,
     CartModelDictSerializer,
     CartModelSerializer,
+    FavModelDictSerializer,
     FavoriteCreateSerializer,
+    FavoriteListSerializer,
     FavoriteSerializer,
 )
 from apps.product.models import CartItem, CartModel, Favorite, Product
@@ -101,12 +103,12 @@ def fav_list(request, pk=None):
     """Возвращает данные о товарах в избранном пользователя."""
     user = request.user
     if user.is_authenticated:
-        favorite, _ = Favorite.objects.get_or_create(user=user)
-        serializer = FavoriteSerializer(instance=favorite, context={'request': request})
+        favorites = Favorite.objects.filter(user=user)
+        serializer = FavoriteListSerializer({'user': user, 'products': favorites}, context={'request': request})
         return Response(serializer.data)
-    cart = CartAndFavorites(request=request)
-    cart_items = cart.extract_items_favorites()
-    serializer = FavoriteSerializer(instance=cart_items, context={'request': request})
+    favorites_req = CartAndFavorites(request=request)
+    favorites = favorites_req.extract_items_favorites()
+    serializer = FavModelDictSerializer(instance=favorites, context={'request': request})
     return Response(serializer.data)
 
 
@@ -114,7 +116,7 @@ def fav_list(request, pk=None):
     request=FavoriteCreateSerializer,
     responses={
         status.HTTP_201_CREATED: OpenApiResponse(
-            response=FavoriteSerializer, description='Успешное добавление товара в избранное'
+            response=FavoriteListSerializer, description='Успешное добавление товара в избранное'
         )
     },
     methods=['POST'],
@@ -123,27 +125,27 @@ def fav_list(request, pk=None):
 def add_favorite(request):
     """Добавляет товар в избранное."""
     user = request.user
-    product = get_object_or_404(Product, pk=request.data['product'])
 
     if not user.is_authenticated:
         favorites = CartAndFavorites(request=request)
-        favorites.add_to_favorites(product.id)
+        serializer = FavoriteCreateSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        favorites.add_to_favorites(product_id=serializer.data.get('product'))
         fav_items = favorites.extract_items_favorites()
-        serializer = FavoriteSerializer(instance=fav_items, context={'request': request})
+        serializer = FavModelDictSerializer(instance=fav_items, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    serializer = FavoriteCreateSerializer(data=request.data, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    product = get_object_or_404(Product, pk=request.data['product'])
     favorite, _ = Favorite.objects.get_or_create(user=user, product=product)
-    serializer = FavoriteSerializer(instance=favorite, context={'request': request})
+    serializer = FavoriteListSerializer(instance=favorite, context={'request': request})
+
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @extend_schema(
     parameters=[OpenApiParameter('id', OpenApiTypes.INT, OpenApiParameter.PATH, description='Идентификатор продукта')],
-    responses={
-        status.HTTP_200_OK: OpenApiResponse(
-            response=FavoriteSerializer, description='Успешное удаление товара из избранного'
-        )
-    },
+    responses={status.HTTP_200_OK: OpenApiResponse(description='Успешное удаление товара из избранного')},
     methods=['DELETE'],
 )
 @api_view(['DELETE'])
@@ -153,14 +155,13 @@ def del_favorite(request, id):
     user = request.user
     if not user.is_authenticated:
         favorites = CartAndFavorites(request=request)
-        favorites.remove_from_favorites(product.id)
+        favorites.remove_from_favorites(product_id=product.id)
         fav_items = favorites.extract_items_favorites()
-        serializer = FavoriteSerializer(instance=fav_items, context={'request': request})
+        serializer = FavModelDictSerializer(instance=fav_items, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    favorite = Favorite.objects.filter(user=user, product=product).first()
-    if favorite:
-        favorite.delete()
+    favorite = get_object_or_404(Favorite, product=product, user=user)
+    favorite.delete()
 
-    serializer = FavoriteSerializer(instance=user.favorites.all(), context={'request': request})
+    serializer = FavoriteListSerializer(instance=user.favorites.all(), context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
