@@ -11,7 +11,7 @@ class CartAndFavorites:
         self.session = request.session
         self.user = user
         self.cart = self.session.get(settings.CART_SESSION_ID) or {}
-        self.favorites = self.session.get(settings.FAV_SESSION_ID) or {}
+        self.favorites = self.session.get(settings.FAVORITE_SESSION_ID) or {}
 
     def __len__(self):
         """Количество всех товаров в корзине."""
@@ -34,7 +34,7 @@ class CartAndFavorites:
     def save(self):
         """Сохраняет данные в сессии."""
         self.session[settings.CART_SESSION_ID] = self.cart
-        self.session[settings.FAV_SESSION_ID] = self.favorites
+        self.session[settings.FAVORITE_SESSION_ID] = self.favorites
         self.session.modified = True
 
     def remove(self, product_id):
@@ -61,7 +61,7 @@ class CartAndFavorites:
 
     def clear_favorites(self):
         """Удаляет корзину из сессии."""
-        del self.session[settings.FAV_SESSION_ID]
+        del self.session[settings.FAVORITE_SESSION_ID]
         self.session.modified = True
 
     def extract_items_favorites(self):

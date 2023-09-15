@@ -4,7 +4,14 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from apps.orders.views import DeliveryTypeViewSet, DeliveryViewSet, OrderViewSet
-from apps.product.cart_views import add_favorite, add_item, cart_items, del_favorite, del_item, fav_list
+from apps.product.cart_views import (
+    add_cartitem,
+    add_favorite,
+    cart_items,
+    delete_cartitem,
+    delete_favorite,
+    favorite_list,
+)
 from apps.product.views import (
     CategoryViewSet,
     CollectionViewSet,
@@ -36,11 +43,11 @@ router.register('orders', OrderViewSet, basename='orders')
 app_name = 'api'
 urlpatterns = [
     path('carts/items/', cart_items, name='items'),
-    path('carts/add_item/', add_item, name='add_item'),
-    path('carts/del_item/<int:id>/', del_item, name='del_item'),
-    path('favorites/list/', fav_list, name='fav_list'),
+    path('carts/add_item/', add_cartitem, name='add_item'),
+    path('carts/delete_item/<int:id>/', delete_cartitem, name='delete_item'),
+    path('favorites/list/', favorite_list, name='fav_list'),
     path('favorites/add_favorite/', add_favorite, name='add_favorite'),
-    path('favorites/del_favorite/<int:id>/', del_favorite, name='del_favorite'),
+    path('favorites/delete_favorite/<int:id>/', delete_favorite, name='delete_favorite'),
     path('users/me/', UserViewSet.as_view({'get': 'me', 'post': 'create', 'patch': 'me'})),
     path('users/change_password/', UserViewSet.as_view({'post': 'set_password'}), name='user-change-password'),
     path('users/reset_password/', UserViewSet.as_view({'post': 'reset_password'}), name='user-reset-password'),

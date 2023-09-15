@@ -21,7 +21,7 @@ from apps.product.models import CartItem, CartModel, Favorite, Product
 
 @extend_schema(responses={status.HTTP_200_OK: CartModelSerializer}, methods=['GET'])
 @api_view(['GET'])
-def cart_items(request, pk=None):
+def cart_items(request):
     """Возвращает данные о товарах в корзине пользователя."""
     user = request.user
     if user.is_authenticated:
@@ -44,7 +44,7 @@ def cart_items(request, pk=None):
     methods=['POST'],
 )
 @api_view(['POST'])
-def add_item(request):
+def add_cartitem(request):
     """Добавляет товар в корзину/обновляет его количество. Количество изменяется на приходящее количество товара."""
     user = request.user
     if not user.is_authenticated:
@@ -78,7 +78,7 @@ def add_item(request):
     methods=['DELETE'],
 )
 @api_view(['DELETE'])
-def del_item(request, id):
+def delete_cartitem(request, id):
     """Удаляет товар из корзины."""
     product = get_object_or_404(Product, id=id)
     user = request.user
@@ -97,7 +97,7 @@ def del_item(request, id):
 
 @extend_schema(responses={status.HTTP_200_OK: FavoriteSerializer}, methods=['GET'])
 @api_view(['GET'])
-def fav_list(request, pk=None):
+def favorite_list(request):
     """Возвращает данные о товарах в избранном пользователя."""
     user = request.user
     if user.is_authenticated:
@@ -149,7 +149,7 @@ def add_favorite(request):
     methods=['DELETE'],
 )
 @api_view(['DELETE'])
-def del_favorite(request, id):
+def delete_favorite(request, id):
     """Удаляет товар из избранного."""
     product = get_object_or_404(Product, id=id)
     user = request.user
