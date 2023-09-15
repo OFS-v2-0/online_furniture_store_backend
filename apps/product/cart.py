@@ -48,7 +48,6 @@ class CartAndFavorites:
         del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
 
-    # Favorites
     def add_to_favorites(self, product_id):
         """Добавить товар в избранное."""
         self.favorites[str(product_id)] = True
