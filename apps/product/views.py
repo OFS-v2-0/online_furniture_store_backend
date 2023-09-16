@@ -5,17 +5,15 @@ import os
 from django.conf import settings
 from django.db.models import Sum
 from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.product.filters import ProductsFilter
-from apps.product.models import Category, Collection, Color, Discount, Favorite, FurnitureDetails, Material, Product
+from apps.product.models import Category, Collection, Color, Discount, FurnitureDetails, Material, Product
 from apps.product.serializers import (
     CategorySerializer,
     CollectionSerializer,
@@ -90,28 +88,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
             context={'request': request},
         )
         return Response(serializer.data)
-
-    @staticmethod
-    def _fetch_favorite_products_serializer_data(request):
-        """Возвращает сериализованные данные избранных товаров ползователя."""
-        favorite_products = Product.objects.filter(favorites__user=request.user)
-        return ShortProductSerializer(favorite_products, many=True, context={'request': request}).data
-
-    @action(detail=True, methods=['post'], permission_classes=(IsAuthenticated,))
-    def favorite(self, request, pk):
-        """Добавление товара в список избранных товаров пользователя."""
-        product = get_object_or_404(Product, pk=pk)
-        Favorite.objects.get_or_create(user=request.user, product=product)
-        serializer_data = self._fetch_favorite_products_serializer_data(request=request)
-        return Response(serializer_data, status=HTTP_201_CREATED)
-
-    @favorite.mapping.delete
-    def unfavorite(self, request, pk):
-        """Удаление товара из списока избранных товаров пользователя."""
-        product = get_object_or_404(Product, pk=pk)
-        get_object_or_404(Favorite, user=request.user, product=product).delete()
-        serializer_data = self._fetch_favorite_products_serializer_data(request=request)
-        return Response(serializer_data, status=HTTP_200_OK)
 
     @action(detail=False)
     def popular(self, request, top=6):

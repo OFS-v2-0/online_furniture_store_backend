@@ -2,7 +2,7 @@
 from django.db.models import Sum
 from rest_framework import serializers
 
-from apps.product.models import CartItem, CartModel, Product
+from apps.product.models import CartItem, CartModel, Favorite, Product
 from apps.product.serializers import ShortProductSerializer
 
 
@@ -93,3 +93,25 @@ class CartItemCreateDictSerializer(serializers.Serializer):
 
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects, source='product_id')
     quantity = serializers.IntegerField(required=True, min_value=1)
+
+
+class FavoriteItemSerializer(serializers.ModelSerializer):
+    """Сериализатор для товара в избранном."""
+
+    product = ShortProductSerializer()
+
+    class Meta:
+        model = Favorite
+        fields = ('product',)
+
+
+class FavoriteSerializer(serializers.Serializer):
+    """Сериализатор для списка товаров в избранном."""
+
+    products = ShortProductSerializer(many=True)
+
+
+class FavoriteCreateSerializer(serializers.Serializer):
+    """Сериализатор для запроса добавления товара в избранное."""
+
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects)
