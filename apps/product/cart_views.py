@@ -1,7 +1,5 @@
 """Views для операций корзины."""
 from django.shortcuts import get_object_or_404
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,9 +15,17 @@ from apps.product.cart_serializers import (
     ShortProductSerializer,
 )
 from apps.product.models import CartItem, CartModel, Favorite, Product
+from apps.product.openapi import (
+    add_cartitem,
+    add_favorite,
+    cart_items,
+    delete_cartitem,
+    delete_favorite,
+    favorite_list,
+)
 
 
-@extend_schema(responses={status.HTTP_200_OK: CartModelSerializer}, methods=['GET'])
+@cart_items
 @api_view(['GET'])
 def cart_items(request):
     """Возвращает данные о товарах в корзине пользователя."""
@@ -34,15 +40,7 @@ def cart_items(request):
     return Response(serializer.data)
 
 
-@extend_schema(
-    request=CartItemCreateSerializer,
-    responses={
-        status.HTTP_201_CREATED: OpenApiResponse(
-            response=CartModelSerializer, description='Успешное добавление товара в корзину'
-        )
-    },
-    methods=['POST'],
-)
+@add_cartitem
 @api_view(['POST'])
 def add_cartitem(request):
     """Добавляет товар в корзину/обновляет его количество. Количество изменяется на приходящее количество товара."""
@@ -68,15 +66,7 @@ def add_cartitem(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@extend_schema(
-    parameters=[OpenApiParameter('id', OpenApiTypes.INT, OpenApiParameter.PATH, description='Идентификатор продукта')],
-    responses={
-        status.HTTP_200_OK: OpenApiResponse(
-            response=CartModelSerializer, description='Успешное удаление товара из корзины'
-        )
-    },
-    methods=['DELETE'],
-)
+@delete_cartitem
 @api_view(['DELETE'])
 def delete_cartitem(request, id):
     """Удаляет товар из корзины."""
@@ -95,7 +85,7 @@ def delete_cartitem(request, id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@extend_schema(responses={status.HTTP_200_OK: FavoriteSerializer}, methods=['GET'])
+@favorite_list
 @api_view(['GET'])
 def favorite_list(request):
     """Возвращает данные о товарах в избранном пользователя."""
@@ -110,15 +100,7 @@ def favorite_list(request):
     return Response(serializer.data)
 
 
-@extend_schema(
-    request=FavoriteCreateSerializer,
-    responses={
-        status.HTTP_201_CREATED: OpenApiResponse(
-            response=FavoriteSerializer, description='Успешное добавление товара в избранное'
-        )
-    },
-    methods=['POST'],
-)
+@add_favorite
 @api_view(['POST'])
 def add_favorite(request):
     """Добавляет товар в избранное."""
@@ -139,15 +121,7 @@ def add_favorite(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@extend_schema(
-    parameters=[OpenApiParameter('id', OpenApiTypes.INT, OpenApiParameter.PATH, description='Идентификатор продукта')],
-    responses={
-        status.HTTP_200_OK: OpenApiResponse(
-            response=FavoriteSerializer, description='Успешное удаление товара из избранного'
-        )
-    },
-    methods=['DELETE'],
-)
+@delete_favorite
 @api_view(['DELETE'])
 def delete_favorite(request, id):
     """Удаляет товар из избранного."""
