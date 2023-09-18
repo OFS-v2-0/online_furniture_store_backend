@@ -9,6 +9,6 @@ from common.permisions import IsOwner
 class ReviewViewSet(ModelViewSet):
     """Представление для отзывов."""
 
-    queryset = Review.objects.all()
+    queryset = Review.objects.all().select_related('user', 'product')
     serializer_class = ReviewSerializer
     permission_classes = (IsOwner,)

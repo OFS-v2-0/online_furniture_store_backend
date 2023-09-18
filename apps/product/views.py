@@ -45,7 +45,7 @@ class MaterialViewSet(ReadOnlyModelViewSet):
 class DiscountViewSet(ReadOnlyModelViewSet):
     """Вьюсет для скидок товаров."""
 
-    queryset = Discount.objects.all()
+    queryset = Discount.objects.all().prefetch_related('applied_products')
     serializer_class = DiscountSerializer
 
 
@@ -66,7 +66,9 @@ class FurnitureDetailsViewSet(ReadOnlyModelViewSet):
 class ProductViewSet(ReadOnlyModelViewSet):
     """Вьюсет для товаров."""
 
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().select_related(
+        'product_type', 'color', 'images', 'material', 'legs_material', 'furniture_details', 'category', 'collection'
+    )
     serializer_class = ProductSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filterset_class = ProductsFilter
@@ -118,7 +120,7 @@ class CollectionViewSet(ReadOnlyModelViewSet):
 
 
 def _get_latest_file(directory):
-    """Возвращает имя полседненго изменённого файла в директории."""
+    """Возвращает имя последненго изменённого файла в директории."""
     list_of_files = glob.glob(directory + '/*')
     if not list_of_files:
         raise Http404('Директория пустая или не существует')

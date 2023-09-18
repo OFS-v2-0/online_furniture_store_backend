@@ -28,14 +28,14 @@ class DeliveryTypeViewSet(viewsets.ReadOnlyModelViewSet):
 class DeliveryViewSet(viewsets.ModelViewSet):
     """Вьюсет для доставок."""
 
-    queryset = Delivery.objects.all()
+    queryset = Delivery.objects.all().select_related('type_delivery')
     serializer_class = DeliverySerializer
 
 
 class OrderViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, GenericViewSet):
     """Вьюсет для заказов. Создание заказа либо получение заказов."""
 
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().select_related('delivery').prefetch_related('products')
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
