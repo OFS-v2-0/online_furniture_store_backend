@@ -14,7 +14,7 @@ from apps.product.cart_serializers import (
     CartModelSerializer,
     FavoriteCreateSerializer,
     FavoriteSerializer,
-    ShortProductSerializer,
+    ProductFavoriteSerializer,
 )
 from apps.product.models import CartItem, CartModel, Favorite, Product
 
@@ -102,7 +102,7 @@ def favorite_list(request):
     user = request.user
     if user.is_authenticated:
         favorite_products = Product.objects.filter(favorites__user=user)
-        serializer = ShortProductSerializer(instance=favorite_products, many=True, context={'request': request})
+        serializer = ProductFavoriteSerializer(instance=favorite_products, many=True, context={'request': request})
         return Response(serializer.data)
     cart = CartAndFavorites(request=request)
     cart_items = cart.extract_items_favorites()
@@ -135,7 +135,7 @@ def add_favorite(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     Favorite.objects.get_or_create(user=user, product=product)
     favorite_products = Product.objects.filter(favorites__user=user)
-    serializer = ShortProductSerializer(instance=favorite_products, many=True, context={'request': request})
+    serializer = ProductFavoriteSerializer(instance=favorite_products, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -164,5 +164,5 @@ def delete_favorite(request, id):
     if favorite:
         favorite.delete()
     favorite_products = Product.objects.filter(favorites__user=user)
-    serializer = ShortProductSerializer(instance=favorite_products, many=True, context={'request': request})
+    serializer = ProductFavoriteSerializer(instance=favorite_products, many=True, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
