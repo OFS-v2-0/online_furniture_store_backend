@@ -87,5 +87,23 @@ LOGGING = {
 # -------------------------------------------------------------------------------
 # Tools that generate code samples can use SERVERS to point to the correct domain
 SPECTACULAR_SETTINGS['SERVERS'] = [  # noqa: F405
-    {'url': 'https://ofs.proninteam.ru', 'description': 'Production server'}
+    {'url': 'https://online-furniture-store.site', 'description': 'Production server'}
 ]
+YANDEX = 'felejcbnqfynavwd'
+
+# EMAIL
+# ------------------------------------------------------------------------------
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.yandex.ru')
+EMAIL_PORT = env('EMAIL_PORT', default='465')
+EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', default=True)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@mail.com')
+DOMAIN = env('DOMAIN', default='localhost')
+# https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
+# DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL', default='social dance <noreply@example.com>')
+# https://docs.djangoproject.com/en/dev/ref/settings/#server-email
+SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
+# https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
+EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[online furniture store]')
