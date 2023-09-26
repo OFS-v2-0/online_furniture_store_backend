@@ -2,7 +2,7 @@
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.utils.crypto import get_random_string
 
-from config.settings.base import SITE_EMAIL, SITE_URL
+from config.settings.dev_prod import DEFAULT_FROM_EMAIL, DOMAIN
 
 
 class UserManager(DjangoUserManager):
@@ -20,10 +20,10 @@ class UserManager(DjangoUserManager):
         user.email_user(
             'Регистрация на сайте',
             message=f'Ваш email успешно зарегистрирован на сайте OFS '
-            f'{SITE_URL}.\n'
+            f'{DOMAIN}.\n'
             f'Ваш пароль: {password}.\n'
             f'Вы можете сменить пароль в личном кабинете.',
-            from_email=SITE_EMAIL,
+            from_email=DEFAULT_FROM_EMAIL,
         )
         return user
 
