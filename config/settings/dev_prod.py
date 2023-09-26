@@ -89,7 +89,6 @@ LOGGING = {
 SPECTACULAR_SETTINGS['SERVERS'] = [  # noqa: F405
     {'url': 'https://online-furniture-store.site', 'description': 'Production server'}
 ]
-YANDEX = 'felejcbnqfynavwd'
 
 # EMAIL
 # ------------------------------------------------------------------------------

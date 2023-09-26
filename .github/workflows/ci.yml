@@ -92,10 +92,9 @@ jobs:
             echo DJANGO_MEDIA_ROOT=${{ secrets.DJANGO_MEDIA_ROOT }} >> .env
 
             echo EMAIL_HOST=${{ secrets.EMAIL_HOST }} >> .env
-            echo EMAIL_PORT=${{ secrets.EMAIL_PORT }} >> .env
-            echo EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS }} >> .env
             echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> .env
             echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> .env
+            echo DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }} >> .env
             echo DOMAIN=${{ secrets.DOMAIN }} >> .env
 
             echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env

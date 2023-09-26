@@ -193,7 +193,6 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.f
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
 EMAIL_FILE_PATH = '/var/www/django/email'
-SITE_EMAIL = env('SITE_EMAIL', default='furniture@ofs.ru')
 
 # ADMIN
 # ------------------------------------------------------------------------------
@@ -259,8 +258,6 @@ CART_SESSION_ID = 'cart'
 
 FAVORITE_SESSION_ID = 'favorite'
 
-
-SITE_URL = env('SITE_URL', default='https://online-furniture-store.github.io/online_furniture_store_frontend/')
 
 # Djoser settings
 DJOSER = {
