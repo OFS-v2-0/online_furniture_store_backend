@@ -73,8 +73,8 @@ class ProductsFilter(filters.FilterSet):
                 )
             elif max_total_price:
                 return queryset.filter(
-                    Q(Q(discounts__discount__isnull=True) and Q(price__lte=min_total_price))
-                    | Q(total_price__lte=min_total_price)
+                    Q(Q(discounts__discount__isnull=True) and Q(price__lte=max_total_price))
+                    | Q(total_price__lte=max_total_price)
                 )
         return queryset
 

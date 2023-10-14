@@ -244,6 +244,7 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
     'SERVE_AUTHENTICATION': ['rest_framework.authentication.SessionAuthentication'],
+    'url': 'http://0.0.0.0:8000',
 }
 
 SIMPLE_JWT = {
