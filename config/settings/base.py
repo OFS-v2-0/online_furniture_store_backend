@@ -245,7 +245,6 @@ SPECTACULAR_SETTINGS = {
     'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],
     'SERVE_AUTHENTICATION': ['rest_framework.authentication.SessionAuthentication'],
     'url': 'http://0.0.0.0:8000',
-    'description': 'Local server',
 }
 
 SIMPLE_JWT = {
