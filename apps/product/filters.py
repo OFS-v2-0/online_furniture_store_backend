@@ -1,5 +1,5 @@
 """Модуль с фильтрами. """
-from django.db.models import F
+from django.db.models import F, Q
 from django_filters import rest_framework as filters
 
 from apps.product.models import Category, Collection, Product
@@ -62,11 +62,20 @@ class ProductsFilter(filters.FilterSet):
             min_total_price = self.data.get('min_total_price')
             max_total_price = self.data.get('max_total_price')
             if min_total_price and max_total_price:
-                return queryset.filter(total_price__range=(min_total_price, max_total_price))
+                return queryset.filter(
+                    Q(Q(discounts__discount__isnull=True) and Q(price__range=(min_total_price, max_total_price)))
+                    | Q(total_price__range=(min_total_price, max_total_price))
+                )
             elif min_total_price:
-                return queryset.filter(total_price__gte=min_total_price)
+                return queryset.filter(
+                    Q(Q(discounts__discount__isnull=True) and Q(price__gte=min_total_price))
+                    | Q(total_price__gte=min_total_price)
+                )
             elif max_total_price:
-                return queryset.filter(total_price__lte=max_total_price)
+                return queryset.filter(
+                    Q(Q(discounts__discount__isnull=True) and Q(price__lte=min_total_price))
+                    | Q(total_price__lte=min_total_price)
+                )
         return queryset
 
     def filter_name(self, queryset, name, value):
