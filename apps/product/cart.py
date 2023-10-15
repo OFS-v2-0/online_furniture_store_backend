@@ -69,3 +69,7 @@ class CartAndFavorites:
         product_ids = self.favorites.keys()
         products = Product.objects.filter(id__in=product_ids)
         return {'products': products}
+
+    def is_favorite(self, prodoct_id):
+        """Возвращает True, если товар в списке избранного и False, если не в списке."""
+        return str(prodoct_id) in self.favorites.keys()
