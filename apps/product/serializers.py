@@ -2,6 +2,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from apps.product.cart import CartAndFavorites
 from apps.product.models import (
     Category,
     Collection,
@@ -101,9 +102,13 @@ class ShortProductSerializer(serializers.ModelSerializer):
     def analyze_is_favorited(self, obj):
         """Возвращает True, если товар добавлен в избранное для авторизированного пользователя."""
         request = self.context.get('request')
-        if not request or not request.user.is_authenticated:
+        if not request:
             return False
-        return obj.favorites.filter(user=request.user).exists()
+        if not request.user.is_authenticated:
+            cart_and_favorite_list = CartAndFavorites(request=request)
+            return cart_and_favorite_list.is_favorite(obj.id)
+        is_favorite = obj.favorites.filter(user=request.user).exists()
+        return is_favorite
 
     def extract_discount(self, obj):
         """Возвращает скидку на продукт."""
