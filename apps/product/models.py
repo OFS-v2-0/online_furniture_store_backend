@@ -1,5 +1,5 @@
 """Модели приложения product."""
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 from django.core.validators import MaxValueValidator
 from django.db import models
@@ -237,7 +237,8 @@ class Product(models.Model):
     def calculate_total_price(self):
         """Возвращает рассчитанную итоговую цену товара с учётом скидки."""
         discount = self.extract_discount()
-        return self.price * Decimal(1 - discount / 100)
+        total_price = self.price * Decimal(1 - discount / 100)
+        return total_price.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
 
 
 class Discount(models.Model):
