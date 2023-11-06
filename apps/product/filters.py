@@ -3,7 +3,7 @@ from django.db.models import F, Q
 from django.utils import timezone
 from django_filters import rest_framework as filters
 
-from apps.product.models import Category, Collection, Material, Product
+from apps.product.models import Category, Collection, Color, Material, Product
 
 
 class ProductsFilter(filters.FilterSet):
@@ -14,6 +14,9 @@ class ProductsFilter(filters.FilterSet):
     )
     collection = filters.ModelMultipleChoiceFilter(
         queryset=Collection.objects.all(), field_name='collection__slug', to_field_name='slug'
+    )
+    color = filters.ModelMultipleChoiceFilter(
+        queryset=Color.objects.all(), field_name='color__name', to_field_name='name'
     )
     brand = filters.CharFilter(lookup_expr='icontains')
     fast_delivery = filters.BooleanFilter()
@@ -44,6 +47,7 @@ class ProductsFilter(filters.FilterSet):
             'category',
             'collection',
             'brand',
+            'color',
             'fast_delivery',
             'min_total_price',
             'max_total_price',
