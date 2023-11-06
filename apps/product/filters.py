@@ -2,7 +2,7 @@
 from django.db.models import F, Q
 from django_filters import rest_framework as filters
 
-from apps.product.models import Category, Collection, Product
+from apps.product.models import Category, Collection, Material, Product
 
 
 class ProductsFilter(filters.FilterSet):
@@ -25,6 +25,16 @@ class ProductsFilter(filters.FilterSet):
     min_rating = filters.NumberFilter(field_name='ratings__average_rating', lookup_expr='gte')
     max_rating = filters.NumberFilter(field_name='ratings__average_rating', lookup_expr='lte')
     name = filters.CharFilter(method='filter_name')
+    material = filters.ModelMultipleChoiceFilter(
+        queryset=Material.objects.all(), field_name='material__name', to_field_name='name'
+    )
+    purpose = filters.CharFilter(field_name='furniture_details__purpose', lookup_expr='icontains')
+    furniture_type = filters.CharFilter(field_name='furniture_details__furniture_type', lookup_expr='icontains')
+    construction = filters.CharFilter(field_name='furniture_details__construction', lookup_expr='icontains')
+    swing_mechanism = filters.CharFilter(field_name='furniture_details__swing_mechanism', lookup_expr='icontains')
+    armrest_adjustment = filters.CharFilter(
+        field_name='furniture_details__armrest_adjustment', lookup_expr='icontains'
+    )
 
     class Meta:
         model = Product
@@ -41,6 +51,12 @@ class ProductsFilter(filters.FilterSet):
             'in_stock',
             'min_rating',
             'max_rating',
+            'material',
+            'purpose',
+            'furniture_type',
+            'construction',
+            'swing_mechanism',
+            'armrest_adjustment',
         )
 
     def filter_is_favorited(self, queryset, name, value):

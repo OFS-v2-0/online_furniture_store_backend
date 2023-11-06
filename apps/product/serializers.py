@@ -131,6 +131,7 @@ class ProductSerializer(ShortProductSerializer):
     collection = CollectionSerializer()
     material = MaterialSerializer()
     legs_material = MaterialSerializer()
+    furniture_details = FurnitureDetailsSerializer()
 
     class Meta(ShortProductSerializer.Meta):
         fields = ShortProductSerializer.Meta.fields + (
@@ -148,8 +149,9 @@ class ProductSerializer(ShortProductSerializer):
             'warranty',
             'description',
             'color',
+            'furniture_details',
         )
-        read_only_fields = ('category', 'material', 'purpose', 'is_favorited')
+        read_only_fields = ('category', 'material', 'is_favorited', 'furniture_details')
 
 
 class ProductAllColors(serializers.Serializer):
