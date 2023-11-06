@@ -19,7 +19,7 @@ from apps.product.views import (
     DiscountViewSet,
     MaterialViewSet,
     ProductViewSet,
-    download_last_file,
+    brand_list,
 )
 from apps.reviews.views import ReviewViewSet
 from apps.users.views import UserViewSet
@@ -57,6 +57,6 @@ urlpatterns = [
         name='user-reset-password-confirm',
     ),
     path('users/my_orders/', UserViewSet.as_view({'get': 'my_orders'}), name='user-my-orders'),
-    path('download/', download_last_file, name='download_file'),
+    path('brand/', brand_list, name='brand_list'),
     path('', include(router.urls)),
 ]

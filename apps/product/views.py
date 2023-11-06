@@ -1,20 +1,14 @@
-"""Модуль представления для приложения products."""
-import glob
-import os
-
-from django.conf import settings
 from django.db.models import Sum
-from django.http import Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.product.filters import ProductsFilter
 from apps.product.models import Category, Collection, Color, Discount, FurnitureDetails, Material, Product
 from apps.product.serializers import (
+    BrandSerializer,
     CategorySerializer,
     CollectionSerializer,
     ColorSerializer,
@@ -119,25 +113,9 @@ class CollectionViewSet(ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-def _get_latest_file(directory):
-    """Возвращает имя последненго изменённого файла в директории."""
-    list_of_files = glob.glob(directory + '/*')
-    if not list_of_files:
-        raise Http404('Директория пустая или не существует')
-    latest_file = max(list_of_files, key=os.path.getctime)
-    return latest_file
-
-
-@api_view(('POST',))
-@permission_classes((IsAdminUser,))
-def download_last_file(request):
-    """Скачивает последний изменённый файл из директории EMAIL_FILE_PATH."""
-    file_path = _get_latest_file(settings.EMAIL_FILE_PATH)
-
-    if not os.path.exists(file_path):
-        raise Http404('Файл не найден')
-
-    with open(file_path, 'rb') as file:
-        response = HttpResponse(file.read(), content_type='application/octet-stream')
-        response['Content-Disposition'] = f'attachment; filename={os.path.basename(file_path)}'
-        return response
+@api_view(('GET',))
+def brand_list(request):
+    """Список брендов товаров."""
+    brand_list = Product.objects.values('brand').order_by().distinct()
+    serializer = BrandSerializer(brand_list, many=True)
+    return Response(serializer.data)
