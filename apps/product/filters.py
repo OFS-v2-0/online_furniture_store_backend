@@ -17,7 +17,7 @@ class ProductsFilter(filters.FilterSet):
     color = filters.ModelMultipleChoiceFilter(
         queryset=Color.objects.all(), field_name='color__name', to_field_name='name'
     )
-    brand = filters.CharFilter(lookup_expr='icontains')
+    brand = filters.CharFilter(lookup_expr='exact')
     fast_delivery = filters.BooleanFilter()
     min_total_price = filters.NumberFilter(method='filter_total_price', lookup_expr='gte')
     max_total_price = filters.NumberFilter(method='filter_total_price', lookup_expr='lte')
@@ -31,13 +31,11 @@ class ProductsFilter(filters.FilterSet):
     material = filters.ModelMultipleChoiceFilter(
         queryset=Material.objects.all(), field_name='material__name', to_field_name='name'
     )
-    purpose = filters.CharFilter(field_name='furniture_details__purpose', lookup_expr='icontains')
-    furniture_type = filters.CharFilter(field_name='furniture_details__furniture_type', lookup_expr='icontains')
-    construction = filters.CharFilter(field_name='furniture_details__construction', lookup_expr='icontains')
-    swing_mechanism = filters.CharFilter(field_name='furniture_details__swing_mechanism', lookup_expr='icontains')
-    armrest_adjustment = filters.CharFilter(
-        field_name='furniture_details__armrest_adjustment', lookup_expr='icontains'
-    )
+    purpose = filters.CharFilter(field_name='furniture_details__purpose', lookup_expr='exact')
+    furniture_type = filters.CharFilter(field_name='furniture_details__furniture_type', lookup_expr='exact')
+    construction = filters.CharFilter(field_name='furniture_details__construction', lookup_expr='exact')
+    swing_mechanism = filters.CharFilter(field_name='furniture_details__swing_mechanism', lookup_expr='exact')
+    armrest_adjustment = filters.CharFilter(field_name='furniture_details__armrest_adjustment', lookup_expr='exact')
 
     class Meta:
         model = Product
