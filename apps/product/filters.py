@@ -1,5 +1,6 @@
 """Модуль с фильтрами. """
 from django.db.models import F, Q
+from django.utils import timezone
 from django_filters import rest_framework as filters
 
 from apps.product.models import Category, Collection, Color, Material, Product
@@ -36,6 +37,7 @@ class ProductsFilter(filters.FilterSet):
     construction = filters.CharFilter(field_name='furniture_details__construction', lookup_expr='exact')
     swing_mechanism = filters.CharFilter(field_name='furniture_details__swing_mechanism', lookup_expr='exact')
     armrest_adjustment = filters.CharFilter(field_name='furniture_details__armrest_adjustment', lookup_expr='exact')
+    has_discount = filters.BooleanFilter(method='filter_has_discount')
 
     class Meta:
         model = Product
@@ -59,6 +61,7 @@ class ProductsFilter(filters.FilterSet):
             'construction',
             'swing_mechanism',
             'armrest_adjustment',
+            'has_discount',
         )
 
     def filter_is_favorited(self, queryset, name, value):
@@ -76,26 +79,46 @@ class ProductsFilter(filters.FilterSet):
     def filter_total_price(self, queryset, name, value):
         """Фильтрация товаров по цене."""
         if value is not None:
+            now = timezone.now().date()
             queryset = queryset.annotate(total_price=F('price') * (1 - F('discounts') / 100))
             min_total_price = self.data.get('min_total_price')
             max_total_price = self.data.get('max_total_price')
             if min_total_price and max_total_price:
                 return queryset.filter(
-                    Q(Q(discounts__discount__isnull=True) and Q(price__range=(min_total_price, max_total_price)))
-                    | Q(total_price__range=(min_total_price, max_total_price))
+                    Q(Q(discounts__discount__isnull=True, price__range=(min_total_price, max_total_price)))
+                    | Q(
+                        discounts__discount_created_at__lte=now,
+                        discounts__discount_end_at__gte=now,
+                        total_price__range=(min_total_price, max_total_price),
+                    )
                 )
             elif min_total_price:
                 return queryset.filter(
                     Q(Q(discounts__discount__isnull=True) and Q(price__gte=min_total_price))
-                    | Q(total_price__gte=min_total_price)
+                    | Q(
+                        discounts__discount_created_at__lte=now,
+                        discounts__discount_end_at__gte=now,
+                        total_price__gte=min_total_price,
+                    )
                 )
             elif max_total_price:
                 return queryset.filter(
                     Q(Q(discounts__discount__isnull=True) and Q(price__lte=max_total_price))
-                    | Q(total_price__lte=max_total_price)
+                    | Q(
+                        total_price__lte=max_total_price,
+                        discounts__discount_created_at__lte=now,
+                        discounts__discount_end_at__gte=now,
+                    )
                 )
         return queryset
 
     def filter_name(self, queryset, name, value):
         """Фильтрация товаров по названию."""
         return queryset.filter(name__icontains=value)
+
+    def filter_has_discount(self, queryset, name, value):
+        """Фильтрация товаров по наличию скидки."""
+        if value:
+            now = timezone.now()
+            return queryset.filter(Q(discounts__discount_created_at__lte=now, discounts__discount_end_at__gte=now))
+        return queryset

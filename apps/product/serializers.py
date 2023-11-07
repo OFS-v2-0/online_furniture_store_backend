@@ -160,3 +160,12 @@ class ProductAllColors(serializers.Serializer):
     product = ProductSerializer()
     other_color_same_products = ProductSerializer(many=True)
     similar_products = ProductSerializer(many=True)
+
+
+class BrandSerializer(serializers.Serializer):
+    """Сериализатор бренда товаров."""
+
+    brand = serializers.CharField()
+
+    class Meta:
+        fields = ('brand',)
