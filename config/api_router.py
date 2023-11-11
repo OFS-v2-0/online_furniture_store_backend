@@ -48,6 +48,11 @@ urlpatterns = [
     path('favorites/list/', favorite_list, name='fav_list'),
     path('favorites/add_favorite/', add_favorite, name='add_favorite'),
     path('favorites/delete_favorite/<int:id>/', delete_favorite, name='delete_favorite'),
+    path(
+        'api/products/materials_by_category/',
+        ProductViewSet.as_view({'get': 'materials_by_category'}),
+        name='materials-by-category',
+    ),
     path('users/me/', UserViewSet.as_view({'get': 'me', 'post': 'create', 'patch': 'me'})),
     path('users/change_password/', UserViewSet.as_view({'post': 'set_password'}), name='user-change-password'),
     path('users/reset_password/', UserViewSet.as_view({'post': 'reset_password'}), name='user-reset-password'),

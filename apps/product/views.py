@@ -96,6 +96,19 @@ class ProductViewSet(ReadOnlyModelViewSet):
         serializer = ShortProductSerializer(popular_products, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=False, methods=['GET'])
+    def materials_by_category(self, request):
+        categories = Category.objects.all()
+        materials_by_category = {}
+
+        for category in categories:
+            products = Product.objects.filter(category=category)
+            materials = Material.objects.filter(products__in=products)
+            serializer = MaterialSerializer(materials, many=True)
+            materials_by_category[category.name] = serializer.data
+
+        return Response(materials_by_category)
+
 
 class CollectionViewSet(ReadOnlyModelViewSet):
     """Вьюсет для коллекций. Только чтение одного или списка объектов."""
