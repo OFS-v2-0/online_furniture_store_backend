@@ -78,7 +78,7 @@ def delete_cartitem(request, id):
         cart_items = cart.extract_items_cart()
         serializer = CartModelDictSerializer(instance=cart_items, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
-    cart = user.cartmodel
+    cart = user.cartmodels
     instance = get_object_or_404(CartItem, product=product, cart=cart)
     instance.delete()
     serializer = CartModelSerializer(instance=cart, context={'request': request})
