@@ -103,7 +103,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
         for category in categories:
             products = Product.objects.filter(category=category)
-            materials = Material.objects.filter(products__in=products)
+            materials = Material.objects.filter(products__in=products).distinct()
             serializer = MaterialSerializer(materials, many=True)
             materials_by_category[category.slug] = serializer.data
 
